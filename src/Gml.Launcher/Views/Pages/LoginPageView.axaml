@@ -45,6 +45,8 @@
                          Text="{Binding Password}" />
             </StackPanel>
 
+            <!-- Removed "Запомнить меня" checkbox -->
+
             <TextBlock Text="{Binding Errors, Converter={converters:FirstElementConverter}}"
                        IsVisible="{Binding Errors, Converter={converters:HasElementsConverter}}"
                        Foreground="Tomato"

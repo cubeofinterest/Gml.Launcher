@@ -62,10 +62,10 @@ public class AsyncSkinRenderLoader
             if (string.IsNullOrEmpty(url) || !ValidateUrl(url))
                 throw new Exception($"User skin not found for user. Url: {url}");
 
-            using var client = new HttpClient();
+            using var client = HttpClientFactory.CreateClient();
             client.DefaultRequestHeaders.Clear();
             client.DefaultRequestHeaders.UserAgent.ParseAdd(
-                $"Gml.Launcher-Client-{nameof(GmlClientManager)}/1.0 (OS: {Environment.OSVersion};)");
+                $"COINT.Launcher-Client-{nameof(GmlClientManager)}/1.0 (OS: {Environment.OSVersion};)");
             var response = await client.GetByteArrayAsync(url, cts.Token);
             using var stream = new MemoryStream(response);
 

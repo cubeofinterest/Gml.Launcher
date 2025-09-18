@@ -1,4 +1,4 @@
-﻿namespace Gml.Launcher.Assets;
+namespace Gml.Launcher.Assets;
 
 public static class ResourceKeysDictionary
 {
@@ -45,7 +45,26 @@ public static class ResourceKeysDictionary
     public const string NewsOffline = "NewsOffline";
     public const string NewsEmptyTitle = "NewsEmptyTitle";
     public const string NewsEmptyContent = "NewsEmptyContent";
-    // public const string Host = "https://gmlb.recloud.tech";
-    public const string Host = "http://10.0.10.74:5000";
-    public const string FolderName = "GamerVIILacunerhV2";
+    public const string UpdateClientTitle = "UpdateClientTitle";
+    public const string UpdateClientConfirmation = "UpdateClientConfirmation";
+    public const string ReinstallJavaTitle = "ReinstallJavaTitle";
+    public const string ReinstallJavaConfirmation = "ReinstallJavaConfirmation";
+    public const string ClientManagement = "ClientManagement";
+    public const string ClientManagementDescription = "ClientManagementDescription";
+    public const string UpdateClient = "UpdateClient";
+    public const string UpdateClientTooltip = "UpdateClientTooltip";
+    public const string ReinstallJava = "ReinstallJava";
+    public const string ReinstallJavaTooltip = "ReinstallJavaTooltip";
+    public const string ResetSettings = "ResetSettings";
+    public const string ResetClient = "ResetClient";
+    public const string ResetJava = "ResetJava";
+    public const string Host = "https://gmlb.mawlee.org";
+    public const string FolderName = "LumenMD";
+
+    // Новые ключи для функционала сохранения учетных данных и сессий
+    public const string RememberMe = "RememberMe";
+    public const string SessionExpired = "SessionExpired";
+    public const string TestSessionExpiration = "TestSessionExpiration";
+    public const string TestSessionExpirationTooltip = "TestSessionExpirationTooltip";
+    public const string SessionAdvancedSettings = "SessionAdvancedSettings";
 }

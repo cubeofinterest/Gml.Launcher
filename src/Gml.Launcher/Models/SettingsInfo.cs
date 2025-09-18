@@ -1,4 +1,4 @@
-using System.Globalization;
+// System.Globalization import removed
 
 namespace Gml.Launcher.Models;
 
@@ -12,15 +12,14 @@ public record SettingsInfo
         int gameHeight,
         bool fullScreen,
         bool isDynamicRam,
-        double ramValue,
-        string? languageCode)
+        double ramValue)
     {
         GameHeight = gameHeight;
         GameWidth = gameWidth;
         FullScreen = fullScreen;
         IsDynamicRam = isDynamicRam;
         RamValue = ramValue;
-        LanguageCode = languageCode;
+        LanguageCode = "ru-RU"; // Always use Russian language
     }
 
     public int GameWidth { get; set; }
@@ -28,10 +27,11 @@ public record SettingsInfo
     public bool FullScreen { get; set; }
     public bool IsDynamicRam { get; set; }
     public double RamValue { get; set; }
-    public string? LanguageCode { get; set; }
+    public string LanguageCode { get; set; } = "ru-RU"; // Always Russian
+    // Session validation interval removed
 
     public static SettingsInfo Default =>
-        new SettingsInfo(900, 600, false, true, 1024, CultureInfo.CurrentUICulture.Name);
+        new SettingsInfo(900, 600, false, true, 1024);
 
     public static SettingsInfo Empty => new();
 }

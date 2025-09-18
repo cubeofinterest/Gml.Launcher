@@ -328,4 +328,58 @@
   <data name="TwoFactorDescription" xml:space="preserve">
     <value>Пожалуйста, введите код подтверждения из вашего приложения аутентификации</value>
   </data>
+  <data name="UpdateClientTitle" xml:space="preserve">
+    <value>Обновить клиент</value>
+  </data>
+  <data name="UpdateClientConfirmation" xml:space="preserve">
+    <value>Это действие удалит все файлы клиента GTNH, кроме настроек, серверов и пользовательских данных. Продолжить?</value>
+  </data>
+  <data name="ReinstallJavaTitle" xml:space="preserve">
+    <value>Переустановить Java</value>
+  </data>
+  <data name="ReinstallJavaConfirmation" xml:space="preserve">
+    <value>Это действие удалит текущую установку Java и загрузит её заново при следующем запуске. Продолжить?</value>
+  </data>
+  <data name="ClientManagement" xml:space="preserve">
+    <value>Управление клиентом</value>
+  </data>
+  <data name="ClientManagementDescription" xml:space="preserve">
+    <value>При возникновении проблем с игрой, используйте эти кнопки для загрузки рабочего клиента</value>
+  </data>
+  <data name="UpdateClient" xml:space="preserve">
+    <value>Обновить клиент</value>
+  </data>
+  <data name="UpdateClientTooltip" xml:space="preserve">
+    <value>Очистить GTNH клиент, сохранив настройки и пользовательские данные</value>
+  </data>
+  <data name="ReinstallJava" xml:space="preserve">
+    <value>Переустановить Java</value>
+  </data>
+  <data name="ReinstallJavaTooltip" xml:space="preserve">
+    <value>Удалить текущую Java и загрузить новую версию</value>
+  </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>Сброс настроек</value>
+  </data>
+  <data name="ResetClient" xml:space="preserve">
+    <value>Сброс клиента</value>
+  </data>
+  <data name="ResetJava" xml:space="preserve">
+    <value>Сбросить Java</value>
+  </data>
+  <data name="RememberMe" xml:space="preserve">
+    <value>Запомнить меня</value>
+  </data>
+  <data name="SessionExpired" xml:space="preserve">
+    <value>Ваша сессия истекла. Пожалуйста, войдите в систему снова.</value>
+  </data>
+  <data name="TestSessionExpiration" xml:space="preserve">
+    <value>Проверить истечение сессии</value>
+  </data>
+  <data name="TestSessionExpirationTooltip" xml:space="preserve">
+    <value>Симуляция истечения сессии для тестирования</value>
+  </data>
+  <data name="SessionAdvancedSettings" xml:space="preserve">
+    <value>Расширенные настройки сессии</value>
+  </data>
 </root>

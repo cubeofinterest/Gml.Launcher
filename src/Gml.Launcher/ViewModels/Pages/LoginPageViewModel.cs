@@ -12,6 +12,7 @@ using Gml.Client.Models;
 using Gml.Launcher.Assets;
 using Gml.Launcher.Core.Exceptions;
 using Gml.Launcher.Core.Services;
+using Gml.Launcher.Models;
 using Gml.Launcher.ViewModels.Base;
 using ReactiveUI;
 using ReactiveUI.Fody.Helpers;
@@ -28,8 +29,10 @@ public class LoginPageViewModel : PageViewModelBase
     private readonly IBackendChecker _backendChecker;
     private readonly IStorageService _storageService;
     private readonly ISystemService _systemService;
+    private readonly CredentialManager _credentialManager;
     private ObservableCollection<string> _errorList = [];
     private bool _isProcessing;
+    private SavedCredentials? _savedCredentials;
 
     internal LoginPageViewModel(IScreen screen,
         IObservable<bool> onClosed,
@@ -37,7 +40,9 @@ public class LoginPageViewModel : PageViewModelBase
         IStorageService? storageService = null,
         ISystemService? systemService = null,
         IBackendChecker? backendChecker = null,
-        ILocalizationService? localizationService = null) : base(screen, localizationService)
+        ILocalizationService? localizationService = null,
+        SavedCredentials? savedCredentials = null,
+        CredentialManager? credentialManager = null) : base(screen, localizationService)
     {
         _screen = (MainWindowViewModel)screen;
         _onClosed = onClosed;
@@ -57,20 +62,35 @@ public class LoginPageViewModel : PageViewModelBase
         _backendChecker = backendChecker
                           ?? Locator.Current.GetService<IBackendChecker>()
                           ?? throw new ServiceNotFoundException(typeof(IBackendChecker));
-
+                          
+        _credentialManager = credentialManager
+                           ?? Locator.Current.GetService<CredentialManager>()
+                           ?? throw new ServiceNotFoundException(typeof(CredentialManager));
 
         _screen.OnClosed.Subscribe(DisposeConnections);
 
         LoginCommand = ReactiveCommand.CreateFromTask(OnAuth);
         Verify2FaCommand = ReactiveCommand.CreateFromTask(OnVerify2Fa);
 
+        // Загружаем сохраненные учетные данные, если savedCredentials не был передан напрямую
+        if (savedCredentials == null)
+        {
+            RxApp.TaskpoolScheduler.Schedule(LoadSavedCredentials);
+        }
+        else
+        {
+            _savedCredentials = savedCredentials;
+            InitializeFromSavedCredentials();
+        }
+
         RxApp.MainThreadScheduler.Schedule(CheckAuth);
     }
 
-    [Reactive] public string Login { get; set; }
-    [Reactive] public string Password { get; set; }
-    [Reactive] public string TwoFactorCode { get; set; }
+    [Reactive] public string Login { get; set; } = string.Empty;
+    [Reactive] public string Password { get; set; } = string.Empty;
+    [Reactive] public string TwoFactorCode { get; set; } = string.Empty;
     [Reactive] public bool Is2FaVisible { get; set; }
+    [Reactive] public bool RememberMe { get; set; }
 
     public bool IsProcessing
     {
@@ -100,6 +120,18 @@ public class LoginPageViewModel : PageViewModelBase
         _gmlClientManager.Dispose();
     }
 
+    private void LoadSavedCredentials()
+    {
+        // Authorization data saving functionality removed
+        Debug.WriteLine("Credential saving has been disabled");
+    }
+
+    private void InitializeFromSavedCredentials()
+    {
+        // Authorization data initialization removed
+        Debug.WriteLine("Credential initialization has been disabled");
+    }
+
     private async void CheckAuth()
     {
         var authUser = await _storageService.GetAsync<AuthUser>(StorageConstants.User);
@@ -109,8 +141,14 @@ public class LoginPageViewModel : PageViewModelBase
             _screen.Router.Navigate.Execute(new OverviewPageViewModel(_screen, authUser, _onClosed));
             await _gmlClientManager.OpenServerConnection(authUser);
         }
+        else
+        {
+            // If we don't have a valid auth user, but we have saved credentials,
+            // the InitializeFromSavedCredentials method will attempt to login automatically
+        }
     }
 
+    
     private async Task OnAuth(CancellationToken arg)
     {
         try
@@ -142,6 +180,9 @@ public class LoginPageViewModel : PageViewModelBase
                     TwoFactorCode = string.Empty;
                     return;
                 }
+
+                // Сохраняем учетные данные, если выбрана опция "Запомнить меня"
+                await SaveCredentialsIfRequested();
 
                 Debug.WriteLine("Authentication successful, no 2FA required");
                 await _storageService.SetAsync(StorageConstants.User, authInfo.User);
@@ -187,6 +228,13 @@ public class LoginPageViewModel : PageViewModelBase
         }
     }
 
+    private Task SaveCredentialsIfRequested()
+    {
+        // Authorization data saving removed
+        Debug.WriteLine("Credential saving has been disabled");
+        return Task.CompletedTask;
+    }
+
     private async Task OnVerify2Fa(CancellationToken arg)
     {
         try
@@ -202,6 +250,9 @@ public class LoginPageViewModel : PageViewModelBase
 
             if (authInfo.User?.IsAuth == true)
             {
+                // Сохраняем учетные данные, если выбрана опция "Запомнить меня"
+                await SaveCredentialsIfRequested();
+                
                 Debug.WriteLine("2FA verification successful");
                 await _storageService.SetAsync(StorageConstants.User, authInfo.User);
                 Is2FaVisible = false; // Скрываем окно 2FA

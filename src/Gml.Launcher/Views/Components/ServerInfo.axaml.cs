@@ -42,7 +42,7 @@ public class ServerInfo : TemplatedControl
     public static readonly StyledProperty<DateTimeOffset?> CreateDateProperty = AvaloniaProperty.Register<ServerInfo, DateTimeOffset?>(
         nameof(CreateDate));
 
-    public static readonly StyledProperty<ICommand> GoModsCommandProperty = AvaloniaProperty.Register<ServerInfo, ICommand>(
+    public static readonly StyledProperty<ICommand?> GoModsCommandProperty = AvaloniaProperty.Register<ServerInfo, ICommand?>(
         nameof(GoModsCommand));
 
     public static readonly StyledProperty<bool> BackendIsNotOfflineProperty = AvaloniaProperty.Register<ServerInfo, bool>(

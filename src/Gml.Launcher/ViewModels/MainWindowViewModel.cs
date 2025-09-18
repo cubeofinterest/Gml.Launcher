@@ -10,6 +10,7 @@ using ReactiveUI;
 using Splat;
 using System;
 using System.Diagnostics;
+using System.IO;
 using System.Reactive.Concurrency;
 using System.Reactive.Subjects;
 
@@ -17,16 +18,12 @@ namespace Gml.Launcher.ViewModels;
 
 public class MainWindowViewModel : WindowViewModelBase, IScreen
 {
-    private readonly IVpnChecker _vpnChecker;
     private readonly ILocalizationService _localizationService;
     private readonly IBackendChecker _backendChecker;
     protected internal readonly Subject<bool> _gameLaunched = new();
 
-    public MainWindowViewModel(IVpnChecker? vpnChecker = null, ILocalizationService? localizationService = null, IBackendChecker? backendChecker = null)
+    public MainWindowViewModel(ILocalizationService? localizationService = null, IBackendChecker? backendChecker = null)
     {
-        _vpnChecker = vpnChecker ?? Locator.Current.GetService<IVpnChecker>()
-            ?? throw new ServiceNotFoundException(typeof(IVpnChecker));
-
         _localizationService = localizationService ?? Locator.Current.GetService<ILocalizationService>()
             ?? throw new ServiceNotFoundException(typeof(ILocalizationService));
 
@@ -36,19 +33,25 @@ public class MainWindowViewModel : WindowViewModelBase, IScreen
         Router.Navigate.Execute(new LoginPageViewModel(this, OnClosed));
 
         RxApp.MainThreadScheduler.Schedule(TimeSpan.FromSeconds(2), CheckBackend);
-
-        RxApp.MainThreadScheduler.Schedule(TimeSpan.FromSeconds(4), CheckSystem);
     }
 
     public INotificationMessageManager Manager { get; } = new NotificationMessageManager();
     protected internal IObservable<bool> GameLaunched => _gameLaunched;
     public RoutingState Router { get; } = new();
 
-    public static async void RestartApp()
+    public static void RestartApp()
     {
+        // ИСПРАВЛЕНО: Безопасный перезапуск приложения с поддержкой путей с пробелами
+        var currentExecutable = Environment.ProcessPath;
+        if (string.IsNullOrEmpty(currentExecutable))
+        {
+            // Fallback для старых версий .NET
+            currentExecutable = Process.GetCurrentProcess().MainModule?.FileName ?? throw new InvalidOperationException("Cannot determine current executable path");
+        }
+
         Process.Start(new ProcessStartInfo
         {
-            FileName = $"{Environment.ProcessPath}",
+            FileName = currentExecutable, // Не нужно оборачивать в кавычки при UseShellExecute = true
             Arguments = string.Empty,
             UseShellExecute = true
         });
@@ -99,7 +102,7 @@ public class MainWindowViewModel : WindowViewModelBase, IScreen
         }
     }
 
-    private async void CheckBackend()
+    private void CheckBackend()
     {
         if (_backendChecker.IsOffline)
         {
@@ -116,17 +119,7 @@ public class MainWindowViewModel : WindowViewModelBase, IScreen
                 .Queue();
         }
     }
-    private async void CheckSystem()
-    {
-        if (_vpnChecker.IsUseVpnTunnel())
-        {
-            Manager
-                .CreateMessage(true, "#3684EA",
-                    _localizationService.GetString(ResourceKeysDictionary.Information),
-                    _localizationService.GetString(ResourceKeysDictionary.VpnUse))
-                .Dismiss()
-                .WithDelay(TimeSpan.FromSeconds(10))
-                .Queue();
-        }
-    }
+
+
+
 }

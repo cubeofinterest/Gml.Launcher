@@ -25,13 +25,29 @@ public static class ServiceLocator
 
         RegisterLocalizationService();
         RegisterSystemService(systemService);
+        
+        // Регистрируем универсальный сервис логирования
+        RegisterLoggingService();
+        
         RegisterLogHelper(systemService);
         var manager = RegisterGmlManager(systemService, installationDirectory, arguments);
         var storageService = RegisterStorage();
+        
+        // Register the new credential manager
+        RegisterCredentialManager(systemService, manager);
 
         CheckAndChangeInstallationFolder(storageService, manager);
         CheckAndChangeLanguage(storageService, systemService);
-        Locator.CurrentMutable.RegisterConstant(new VpnChecker(), typeof(IVpnChecker));
+        
+        // Register DevLoggingService for debug builds
+#if DEBUG
+        var devLoggingService = new DevLoggingService();
+        Locator.CurrentMutable.RegisterConstant(devLoggingService, typeof(IDevLoggingService));
+        
+        // Configure HttpClient factory for network logging
+        ConfigureGlobalHttpClientLogging(devLoggingService);
+#endif
+        
         Locator.CurrentMutable.RegisterConstant(new BackendChecker(), typeof(IBackendChecker));
         Locator.CurrentMutable.RegisterConstant(new SettingsService(
                 GetRequiredService<ISystemService>(),
@@ -40,8 +56,21 @@ public static class ServiceLocator
             typeof(ISettingsService)
         );
 
+        // Регистрируем сервис проверки сессии
+        Locator.CurrentMutable.RegisterConstant(new SessionValidationService(
+                GetRequiredService<IGmlClientManager>(),
+                GetRequiredService<IStorageService>(),
+                GetRequiredService<ISettingsService>()
+            ),
+            typeof(ISessionValidationService)
+        );
+
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
         {
+            // Логируем необработанные исключения
+            var loggingService = Locator.Current.GetService<ILoggingService>();
+            loggingService?.LogCritical("Unhandled exception", ((Exception)args.ExceptionObject).ToString());
+            
             SentrySdk.CaptureException((Exception)args.ExceptionObject);
         };
 
@@ -55,6 +84,16 @@ public static class ServiceLocator
         return Locator.Current.GetService<T>() ?? throw new Exception();
     }
 
+    private static void RegisterLoggingService()
+    {
+        var loggingService = new LoggingService();
+        Locator.CurrentMutable.RegisterConstant(loggingService, typeof(ILoggingService));
+        
+        // Логируем успешную инициализацию
+        loggingService.LogLauncherUpdate("Logging service registered", 
+            $"Build mode: {(loggingService != null ? "ENABLED" : "DISABLED")}");
+    }
+
     private static void RegisterLogHelper(SystemService systemService)
     {
         Locator.CurrentMutable.RegisterConstant(new LogHandler());
@@ -62,13 +101,8 @@ public static class ServiceLocator
 
     private static void CheckAndChangeLanguage(LocalStorageService storageService, SystemService systemService)
     {
-        var data = storageService.GetAsync<SettingsInfo>(StorageConstants.Settings).Result;
-
-        if (data != null && !string.IsNullOrEmpty(data.LanguageCode))
-            Assets.Resources.Resources.Culture = systemService
-                .GetAvailableLanguages()
-                .FirstOrDefault(c => c.Culture.Name == data.LanguageCode)?
-                .Culture ?? new CultureInfo("ru-RU");
+        // Set Russian language regardless of saved settings
+        Assets.Resources.Resources.Culture = new CultureInfo("ru-RU");
     }
 
     private static LocalStorageService RegisterStorage()
@@ -106,7 +140,13 @@ public static class ServiceLocator
     private static void RegisterSystemService(SystemService systemService)
     {
         Locator.CurrentMutable.RegisterConstant(systemService, typeof(ISystemService));
-
+    }
+    
+    private static void RegisterCredentialManager(SystemService systemService, GmlClientManager manager)
+    {
+        var credentialManager = new CredentialManager(systemService, manager);
+        Locator.CurrentMutable.RegisterConstant(credentialManager, typeof(CredentialManager));
+        Debug.WriteLine($"[Gml][{DateTime.Now:yyyy-MM-dd HH:mm:ss.fff}] Credential Manager registered");
     }
 
     private static void RegisterLocalizationService()
@@ -114,4 +154,28 @@ public static class ServiceLocator
         var service = new ResourceLocalizationService();
         Locator.CurrentMutable.RegisterConstant(service, typeof(ILocalizationService));
     }
+
+#if DEBUG
+    private static void ConfigureGlobalHttpClientLogging(DevLoggingService devLoggingService)
+    {
+        try
+        {
+            // Logging configuration message
+            devLoggingService.LogLauncherUpdate("NetworkLogging", "Configured global HTTP client logging for development mode");
+            
+            // Setup initial messages to show it's working
+            devLoggingService.LogNetworkRequest("SYSTEM", "[Startup Configuration]", 
+                "User-Agent: COINT.Launcher-Client/1.0", 
+                "Network logging initialized successfully");
+            
+            // Create a default client with the User-Agent header to show it works
+            var client = new System.Net.Http.HttpClient();
+            client.DefaultRequestHeaders.Add("User-Agent", "COINT.Launcher-Client/1.0");
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"Failed to configure HTTP client logging: {ex.Message}");
+        }
+    }
+#endif
 }
