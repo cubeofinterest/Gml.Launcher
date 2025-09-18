@@ -112,7 +112,7 @@ public class OverviewPageViewModel : PageViewModelBase
                 _gmlManager))
         );
 
-        HomeCommand = ReactiveCommand.Create(async () => await LoadProfiles());
+        HomeCommand = ReactiveCommand.CreateFromTask(LoadProfiles);
 
         _gmlManager.ProgressChanged.Subscribe(percentage =>
         {
@@ -132,9 +132,12 @@ public class OverviewPageViewModel : PageViewModelBase
 
         PlayCommand = ReactiveCommand.CreateFromTask(StartGame);
 
+        RefreshNewsCommand = ReactiveCommand.CreateFromTask(RefreshNews);
+
         BackendIsActive = !_backendChecker.IsOffline;
 
-        RxApp.MainThreadScheduler.Schedule(LoadData);
+        // ИСПРАВЛЕНО: Запускаем LoadData через Task.Run вместо Schedule
+        _ = Task.Run(LoadData);
     }
     [Reactive] public bool IsModsButtonVisible { get; private set; }
 
@@ -146,6 +149,7 @@ public class OverviewPageViewModel : PageViewModelBase
     public ICommand PlayCommand { get; set; }
     public ICommand GoSettingsCommand { get; set; }
     public ICommand HomeCommand { get; set; }
+    public ICommand RefreshNewsCommand { get; set; }
     public ListViewModel ListViewModel { get; } = new();
     public IUser User { get; }
     public bool BackendIsActive { get; }
@@ -221,6 +225,11 @@ public class OverviewPageViewModel : PageViewModelBase
             await _storageService.SetAsync<IUser?>(StorageConstants.User, null);
             _mainViewModel.Router.Navigate.Execute(new LoginPageViewModel(_mainViewModel, _onClosed));
         });
+    }
+    
+    private async Task RefreshNews()
+    {
+        await LoadNews();
     }
 
     private async Task StartGame()
@@ -427,7 +436,7 @@ public class OverviewPageViewModel : PageViewModelBase
         });
     }
 
-    private async void KillGameProcess(bool isClosed)
+    private void KillGameProcess(bool isClosed)
     {
         try
         {
@@ -457,12 +466,14 @@ public class OverviewPageViewModel : PageViewModelBase
         {
             SentrySdk.CaptureException(exception);
             Console.WriteLine(exception);
+            // ИСПРАВЛЕНО: Добавил await
             await Reconnect();
         }
         catch (HttpRequestException exception)
         {
             SentrySdk.CaptureException(exception);
             Console.WriteLine(exception);
+            // ИСПРАВЛЕНО: Добавил await
             await Reconnect();
         }
         catch (Exception exception)
@@ -570,6 +581,7 @@ public class OverviewPageViewModel : PageViewModelBase
 
         await Task.Delay(TimeSpan.FromSeconds(5));
 
+        // ИСПРАВЛЕНО: Вызываем LoadData без await, так как это async void
         LoadData();
     }
 }

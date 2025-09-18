@@ -15,7 +15,7 @@
         <!-- Background -->
         <components:BackgroundComponent Grid.Column="0" />
         <Border Padding="20">
-            <Grid ColumnDefinitions="350, 30, .6*, 30 0.2*" RowDefinitions="Auto, 30, *">
+            <Grid ColumnDefinitions="450, 30, .5*" RowDefinitions="Auto, 30, *">
 
                 <!-- Navigation -->
                 <Grid Grid.ColumnSpan="3" Grid.Row="0">
@@ -28,64 +28,122 @@
                 </Grid>
 
                 <!-- Ram Block -->
-                <components:StackFrameBorder Grid.Row="2"
-                                             Grid.Column="0"
-                                             Spacing="10"
-                                             VerticalAlignment="Top">
-                    <StackPanel Orientation="Horizontal"
-                                Margin="0, 0, 0, 10"
-                                Spacing="10">
-                        <Svg Path="/Assets/Images/ram.svg"
-                             Width="28"
-                             Height="28" />
-                        <TextBlock Text="{x:Static lang:Resources.SettingsRamTitle}"
-                                   Classes="HeadlineText"
-                                   Margin="0"
-                                   VerticalAlignment="Center" />
-                    </StackPanel>
+                <StackPanel Grid.Row="2"
+                          Grid.Column="0"
+                          Spacing="20"
+                          VerticalAlignment="Top">
+                    
+                    <!-- RAM Settings Section -->
+                    <components:StackFrameBorder Spacing="10">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0, 0, 0, 10"
+                                    Spacing="10">
+                            <Svg Path="/Assets/Images/ram.svg"
+                                 Width="28"
+                                 Height="28" />
+                            <TextBlock Text="{x:Static lang:Resources.SettingsRamTitle}"
+                                       Classes="HeadlineText"
+                                       Margin="0"
+                                       VerticalAlignment="Center" />
+                        </StackPanel>
 
-                    <TextBlock Text="{x:Static lang:Resources.SettingsRamDescription}"
-                               TextWrapping="Wrap"
-                               Margin="38, 0, 0, 0"
-                               LineHeight="25"
-                               Classes="FormText" />
+                        <TextBlock Text="{x:Static lang:Resources.SettingsRamDescription}"
+                                   TextWrapping="Wrap"
+                                   Margin="38, 0, 0, 0"
+                                   LineHeight="25"
+                                   Classes="FormText" />
 
-                    <Border Classes="Separator"
-                            Margin="0, 10" />
+                        <Border Classes="Separator"
+                                Margin="0, 10" />
 
-                    <CheckBox Content="{x:Static lang:Resources.DynamicValue}"
-                              Classes="FormCheckBox"
-                              IsChecked="{Binding DynamicRamValue}" />
+                        <CheckBox Content="{x:Static lang:Resources.DynamicValue}"
+                                  Classes="FormCheckBox"
+                                  IsChecked="{Binding DynamicRamValue}" />
 
-                    <Border Classes="Separator"
-                            Margin="0, 10"
-                            IsVisible="{Binding DynamicRamValue, Converter={converters:BoolReverseConverter}}" />
+                        <Border Classes="Separator"
+                                Margin="0, 10"
+                                IsVisible="{Binding DynamicRamValue, Converter={converters:BoolReverseConverter}}" />
 
-                    <StackPanel IsVisible="{Binding DynamicRamValue, Converter={converters:BoolReverseConverter}}">
-                        <Slider Minimum="{Binding MinRamValue}"
-                                Maximum="{Binding MaxRamValue}"
-                                Value="{Binding RamValue}"
-                                TickFrequency="{Binding RamTickValue}"
-                                IsSnapToTickEnabled="True"
-                                x:Name="ViewSlider"
-                                Classes="FormSlider" />
+                        <StackPanel IsVisible="{Binding DynamicRamValue, Converter={converters:BoolReverseConverter}}">
+                            <!-- Slider and manual input in the same row -->
+                            <Grid ColumnDefinitions="*, 15, Auto" Margin="0, 5, 0, 0">
+                                <Slider Grid.Column="0"
+                                        Minimum="{Binding MinRamValue}"
+                                        Maximum="{Binding MaxRamValue}"
+                                        Value="{Binding RamValue}"
+                                        TickFrequency="{Binding RamTickValue}"
+                                        IsSnapToTickEnabled="True"
+                                        x:Name="ViewSlider"
+                                        Classes="FormSlider" />
+                                        
+                                <Grid Grid.Column="2" ColumnDefinitions="Auto, Auto">
+                                    <TextBox Grid.Column="0"
+                                             Width="100"
+                                             Classes="FormBox"
+                                             Text="{Binding RamValueView}"
+                                             KeyDown="OnKeyDown"
+                                             TextChanged="OnTextChanged"
+                                             LostFocus="OnRamValueLostFocus"
+                                             VerticalAlignment="Center" />
+                                             
+                                    <TextBlock Grid.Column="1"
+                                               Text="{x:Static lang:Resources.UnitMb}"
+                                               Classes="FormText"
+                                               Margin="5, 0, 0, 0"
+                                               VerticalAlignment="Center"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource ContentColor}" />
+                                </Grid>
+                            </Grid>
+                        </StackPanel>
+                    </components:StackFrameBorder>
+                    
+                    <!-- Client Management Section (Moved here) -->
+                    <components:StackFrameBorder Spacing="10">
+                        <StackPanel Orientation="Horizontal"
+                                    Margin="0, 0, 0, 10"
+                                    Spacing="10">
+                            <Svg Path="/Assets/Images/settings.svg"
+                                 Width="28"
+                                 Height="28" />
+                            <TextBlock Text="{x:Static lang:Resources.ClientManagement}"
+                                       Margin="0"
+                                       Classes="HeadlineText" />
+                        </StackPanel>
+                        
+                        <TextBlock Text="{x:Static lang:Resources.ClientManagementDescription}"
+                                   TextWrapping="Wrap"
+                                   Margin="38, 0, 0, 0"
+                                   LineHeight="25"
+                                   Classes="FormText" />
 
-                        <Grid Margin="0, -5, 0, 0">
-                            <!-- <TextBlock Text="ОЗУ" -->
-                            <!--            Classes="FormText" /> -->
-                            <TextBlock Classes="FormText"
-                                       FontSize="16"
-                                       Foreground="{DynamicResource HeadlineColor}"
-                                       HorizontalAlignment="Right">
-                                <Run Text="{Binding RamValueView}" />
-                                <Run Text="{x:Static lang:Resources.UnitMb}"
-                                     FontSize="12"
-                                     Foreground="{DynamicResource ContentColor}" />
-                            </TextBlock>
-                        </Grid>
-                    </StackPanel>
+                        <Border Classes="Separator" Margin="0, 10" />
+                        
+                        <StackPanel Spacing="8" Margin="0, 8, 0, 0">
+                            <Grid ColumnDefinitions="*, 8, *">
+                                <components:GmlButton Grid.Column="0"
+                                                  IconPath="/Assets/Images/edit.svg"
+                                                  IconSize="18"
+                                                  Command="{Binding UpdateClientCommand}"
+                                                  Padding="12, 8, 12, 8"
+                                                  Classes="TextIcon Additional"
+                                                  HorizontalAlignment="Stretch"
+                                                  Text="{x:Static lang:Resources.UpdateClient}"
+                                                  ToolTip.Tip="{x:Static lang:Resources.UpdateClientTooltip}" />
 
-                </components:StackFrameBorder>
+                                <components:GmlButton Grid.Column="2"
+                                                  IconPath="/Assets/Images/settings.svg"
+                                                  IconSize="18"
+                                                  Command="{Binding ReinstallJavaCommand}"
+                                                  Padding="12, 8, 12, 8"
+                                                  Classes="TextIcon Additional"
+                                                  HorizontalAlignment="Stretch"
+                                                  Text="{x:Static lang:Resources.ResetJava}"
+                                                  ToolTip.Tip="{x:Static lang:Resources.ReinstallJavaTooltip}" />
+                            </Grid>
+                        </StackPanel>
+                    </components:StackFrameBorder>
+                </StackPanel>
 
                 <StackPanel Grid.Row="2"
                             Grid.Column="2"
@@ -122,20 +180,22 @@
                             <TextBox Grid.Column="0"
                                      Classes="FormBox"
                                      Text="{Binding WindowWidth}"
-                                     TextChanged="OnTextInput" />
+                                     TextChanged="OnTextChanged" />
                             <TextBlock Text="x"
                                        Classes="FormText"
                                        VerticalAlignment="Center"
                                        Grid.Column="2" />
                             <TextBox Grid.Column="4"
-                                     TextChanged="OnTextInput"
+                                     TextChanged="OnTextChanged"
                                      Text="{Binding WindowHeight}"
                                      Classes="FormBox" />
                         </Grid>
 
 
-                    </components:StackFrameBorder>
-
+                                        </components:StackFrameBorder>
+                    
+                    <!-- Session Validation Settings removed -->
+                    
                     <!-- Installation directory -->
                     <components:StackFrameBorder
                         Spacing="10"
@@ -180,28 +240,12 @@
                         </Grid>
 
                     </components:StackFrameBorder>
+                    
+                    <!-- Client Management section has been moved to the left column after RAM settings -->
 
                 </StackPanel>
 
-                <!-- Language -->
-                <ComboBox Grid.Column="4"
-                          Grid.Row="2"
-                          Classes="ComboBoxStyle"
-                          VerticalAlignment="Bottom"
-                          HorizontalAlignment="Right"
-                          ItemsSource="{Binding AvailableLanguages}"
-                          SelectedItem="{Binding SelectedLanguage}">
-                    <ComboBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel Orientation="Horizontal" Spacing="10">
-                                <Svg Path="{Binding IconPath}"
-                                     Width="18"/>
-                                <TextBlock Text="{Binding Name}" />
-                            </StackPanel>
-                        </DataTemplate>
-                    </ComboBox.ItemTemplate>
-
-                </ComboBox>
+                <!-- Language selector removed -->
 
 
             </Grid>

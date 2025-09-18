@@ -71,6 +71,8 @@
                                             FontSize="16"
                                             Text="{x:Static lang:Resources.Settings}" />
 
+
+                        <!--
                         <controls:GmlButton Classes="TextIcon Secondary"
                                             Command="{TemplateBinding GoModsCommand}"
                                             IconPath="/Assets/Images/document.svg"
@@ -79,6 +81,7 @@
                                             IsVisible="{TemplateBinding IsModsButtonVisible}"
                                             IsEnabled="{TemplateBinding BackendIsNotOffline}"
                                             Text="{x:Static lang:Resources.ModsList}" />
+                        -->
                     </StackPanel>
                 </StackPanel>
             </ControlTemplate>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using Avalonia;
 using Gml.Launcher.Assets.Resources;
 
@@ -16,5 +17,13 @@ public class ResourceLocalizationService : ILocalizationService
     private static string? TryGetLocalizedString(string key)
     {
         return Resources.ResourceManager.GetString(key, Resources.Culture);
+    }
+    
+    public void ChangeLanguage(CultureInfo culture)
+    {
+        if (Application.Current != null)
+        {
+            Resources.Culture = culture;
+        }
     }
 }

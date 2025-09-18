@@ -4,6 +4,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Avalonia;
 using Avalonia.Media.Imaging;
+using Gml.Launcher.Core.Services;
 using Gml.Launcher.Views.Components;
 using L1.Avalonia.Gif.Decoding;
 using Sentry;
@@ -47,7 +48,7 @@ public class AsyncStreamToImageLoader
 
             if (!fileName.Exists || fileName.Length == 0)
             {
-                using var client = new HttpClient();
+                using var client = HttpClientFactory.CreateClient();
                 var response = await client.GetByteArrayAsync(url);
                 using var stream = new MemoryStream(response);
                 await ConvertStreamToFile(stream, fileName.FullName);

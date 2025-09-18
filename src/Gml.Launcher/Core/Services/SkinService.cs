@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.IO;
 using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.Formats;
 using SixLabors.ImageSharp.Formats.Png;
 using SixLabors.ImageSharp.PixelFormats;
 using SixLabors.ImageSharp.Processing;
@@ -173,7 +174,7 @@ public abstract class SkinViewer
             croppedRightArm = ResizeImage(croppedRightArm, cloakScaleFactor);
         }
 
-        Image croppedCloak = null;
+        Image? croppedCloak = null;
 
         if (includeCloak && cloakImage != null)
             croppedCloak = cloakImage.Clone(ctx =>
@@ -216,8 +217,9 @@ public abstract class SkinViewer
         });
 
         using var memoryStream = new MemoryStream();
-        if (inputImage.Metadata.DecodedImageFormat != null)
-            combinedImage.Save(memoryStream, inputImage.Metadata.DecodedImageFormat);
+        var format = inputImage.Metadata?.DecodedImageFormat;
+        if (format != null)
+            combinedImage.Save(memoryStream, format!);
         else
             combinedImage.Save(memoryStream, new PngEncoder());
 
@@ -234,8 +236,9 @@ public abstract class SkinViewer
 
         using var resizeMemoryStream = new MemoryStream();
 
-        if (inputImage.Metadata.DecodedImageFormat != null)
-            combinedImage.Save(resizeMemoryStream, inputImage.Metadata.DecodedImageFormat);
+        var resizeFormat = inputImage.Metadata?.DecodedImageFormat;
+        if (resizeFormat != null)
+            combinedImage.Save(resizeMemoryStream, resizeFormat!);
         else
             combinedImage.Save(resizeMemoryStream, new PngEncoder());
 
@@ -262,8 +265,9 @@ public abstract class SkinViewer
 
         using var memoryStream = new MemoryStream();
 
-        if (inputImage.Metadata.DecodedImageFormat != null)
-            croppedImage.Save(memoryStream, inputImage.Metadata.DecodedImageFormat);
+        var croppedFormat = inputImage.Metadata?.DecodedImageFormat;
+        if (croppedFormat != null)
+            croppedImage.Save(memoryStream, croppedFormat!);
         else
             croppedImage.Save(memoryStream, new PngEncoder());
 

@@ -16,7 +16,7 @@ namespace Gml.Launcher.ViewModels.Pages;
 public class ProfilePageViewModel : PageViewModelBase
 {
     private readonly IGmlClientManager _manager;
-    [Reactive] public string TextureUrl { get; set; }
+    [Reactive] public string TextureUrl { get; set; } = string.Empty;
     [Reactive] public IUser User { get; set; }
     internal ProfilePageViewModel(
         IScreen screen,

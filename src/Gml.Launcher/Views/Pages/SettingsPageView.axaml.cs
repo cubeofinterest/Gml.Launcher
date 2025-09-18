@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.IO;
 using System.Diagnostics;
@@ -9,6 +9,7 @@ using Avalonia.Markup.Xaml;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
+using Avalonia.Input;
 using GamerVII.Notification.Avalonia;
 using Gml.Launcher.Assets;
 using Gml.Launcher.ViewModels.Pages;
@@ -27,14 +28,46 @@ public partial class SettingsPageView : ReactiveUserControl<SettingsPageViewMode
         AvaloniaXamlLoader.Load(this);
     }
 
-    private void OnTextInput(object sender, AvaloniaPropertyChangedEventArgs e)
+    private void OnKeyDown(object sender, KeyEventArgs e)
     {
+        // Allow only numeric characters, backspace, delete, and navigation keys
+        if (!char.IsDigit((char)e.Key) && 
+            e.Key != Key.Back && 
+            e.Key != Key.Delete && 
+            e.Key != Key.Left && 
+            e.Key != Key.Right && 
+            e.Key != Key.Tab)
+        {
+            e.Handled = true;
+        }
     }
 
-
-    private void OnTextInput(object? sender, TextChangedEventArgs e)
+    private void OnTextChanged(object? sender, TextChangedEventArgs e)
     {
-        if (sender is TextBox textBox) textBox.Text = string.Concat(textBox.Text?.Where(char.IsDigit) ?? string.Empty);
+        if (sender is TextBox textBox) 
+        {
+            // Ensure only numeric input
+            var originalCaretIndex = textBox.CaretIndex;
+            var originalLength = textBox.Text?.Length ?? 0;
+            
+            textBox.Text = string.Concat(textBox.Text?.Where(char.IsDigit) ?? string.Empty);
+            
+            // Try to maintain cursor position
+            var newLength = textBox.Text?.Length ?? 0;
+            if (originalCaretIndex <= newLength)
+            {
+                textBox.CaretIndex = originalCaretIndex - (originalLength - newLength);
+            }
+        }
+    }
+    
+    private void OnRamValueLostFocus(object? sender, RoutedEventArgs e)
+    {
+        // When the RAM text box loses focus, ensure the value is applied
+        if (sender is TextBox textBox && ViewModel != null)
+        {
+            ViewModel.RamValueView = textBox.Text ?? string.Empty;
+        }
     }
 
     private async void OpenFileDialog(object? sender, RoutedEventArgs e)
@@ -52,11 +85,6 @@ public partial class SettingsPageView : ReactiveUserControl<SettingsPageViewMode
                 if (folders.Count != 1) return;
 
                 var path = folders[0].Path.LocalPath;
-
-                if (path.Any(char.IsWhiteSpace))
-                {
-                    throw new Exception("Invalid folder name");
-                }
 
                 ViewModel!.InstallationFolder = Path.GetFullPath(path);
                 ViewModel!.ChangeFolder();
@@ -79,7 +107,7 @@ public partial class SettingsPageView : ReactiveUserControl<SettingsPageViewMode
                 .Queue();
         }
     }
-    private async void OpenLocation(object? sender, RoutedEventArgs e)
+    private void OpenLocation(object? sender, RoutedEventArgs e)
     {
         try
         {
@@ -88,15 +116,33 @@ public partial class SettingsPageView : ReactiveUserControl<SettingsPageViewMode
 
             if (OperatingSystem.IsWindows())
             {
-                Process.Start("explorer.exe", ViewModel!.InstallationFolder);
+                // ИСПРАВЛЕНО: Безопасный запуск explorer с путями, содержащими пробелы
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "explorer.exe",
+                    Arguments = $"\"{ViewModel!.InstallationFolder}\"", // Добавляем кавычки
+                    UseShellExecute = false
+                });
             }
             else if (OperatingSystem.IsMacOS())
             {
-                Process.Start("open", ViewModel!.InstallationFolder);
+                // ИСПРАВЛЕНО: Безопасный запуск для macOS
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "open",
+                    Arguments = $"\"{ViewModel!.InstallationFolder}\"", // Добавляем кавычки
+                    UseShellExecute = false
+                });
             }
             else if (OperatingSystem.IsLinux())
             {
-                Process.Start("xdg-open", ViewModel!.InstallationFolder);
+                // ИСПРАВЛЕНО: Безопасный запуск для Linux
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "xdg-open",
+                    Arguments = $"\"{ViewModel!.InstallationFolder}\"", // Добавляем кавычки
+                    UseShellExecute = false
+                });
             }
         }
         catch (Exception exception)

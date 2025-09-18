@@ -336,4 +336,43 @@
   <data name="TwoFactorDescription" xml:space="preserve">
     <value>请输入您身份验证应用中的验证码。</value>
   </data>
+  <data name="UpdateClientTitle" xml:space="preserve">
+    <value>更新客户端</value>
+  </data>
+  <data name="UpdateClientConfirmation" xml:space="preserve">
+    <value>此操作将删除所有GTNH客户端文件，但保留设置、服务器和用户数据。继续？</value>
+  </data>
+  <data name="ReinstallJavaTitle" xml:space="preserve">
+    <value>重新安装Java</value>
+  </data>
+  <data name="ReinstallJavaConfirmation" xml:space="preserve">
+    <value>此操作将删除当前的Java安装，并在下次启动时重新下载。继续？</value>
+  </data>
+  <data name="ClientManagement" xml:space="preserve">
+    <value>客户端管理</value>
+  </data>
+  <data name="ClientManagementDescription" xml:space="preserve">
+    <value>维护游戏客户端的其他工具</value>
+  </data>
+  <data name="UpdateClient" xml:space="preserve">
+    <value>更新客户端</value>
+  </data>
+  <data name="UpdateClientTooltip" xml:space="preserve">
+    <value>清除GTNH客户端，同时保留设置和用户数据</value>
+  </data>
+  <data name="ReinstallJava" xml:space="preserve">
+    <value>重新安装Java</value>
+  </data>
+  <data name="ReinstallJavaTooltip" xml:space="preserve">
+    <value>删除当前Java并下载新版本</value>
+  </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>重置设置</value>
+  </data>
+  <data name="ResetClient" xml:space="preserve">
+    <value>重置客户端</value>
+  </data>
+  <data name="ResetJava" xml:space="preserve">
+    <value>重置Java</value>
+  </data>
 </root>

@@ -330,4 +330,43 @@ To exit offline mode, make sure that the server is available, and then restart t
   <data name="TwoFactorDescription" xml:space="preserve">
     <value>Please enter the verification code from your authentication app.</value>
   </data>
+  <data name="UpdateClientTitle" xml:space="preserve">
+    <value>Update Client</value>
+  </data>
+  <data name="UpdateClientConfirmation" xml:space="preserve">
+    <value>This action will delete all GTNH client files except settings, servers and user data. Continue?</value>
+  </data>
+  <data name="ReinstallJavaTitle" xml:space="preserve">
+    <value>Reinstall Java</value>
+  </data>
+  <data name="ReinstallJavaConfirmation" xml:space="preserve">
+    <value>This action will delete the current Java installation and download it again on the next launch. Continue?</value>
+  </data>
+  <data name="ClientManagement" xml:space="preserve">
+    <value>Client Management</value>
+  </data>
+  <data name="ClientManagementDescription" xml:space="preserve">
+    <value>Additional tools for maintaining game client</value>
+  </data>
+  <data name="UpdateClient" xml:space="preserve">
+    <value>Update Client</value>
+  </data>
+  <data name="UpdateClientTooltip" xml:space="preserve">
+    <value>Clear GTNH client while preserving settings and user data</value>
+  </data>
+  <data name="ReinstallJava" xml:space="preserve">
+    <value>Reinstall Java</value>
+  </data>
+  <data name="ReinstallJavaTooltip" xml:space="preserve">
+    <value>Delete current Java and download a new version</value>
+  </data>
+  <data name="ResetSettings" xml:space="preserve">
+    <value>Reset Settings</value>
+  </data>
+  <data name="ResetClient" xml:space="preserve">
+    <value>Reset Client</value>
+  </data>
+  <data name="ResetJava" xml:space="preserve">
+    <value>Reset Java</value>
+  </data>
 </root>
